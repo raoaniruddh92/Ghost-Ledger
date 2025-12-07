@@ -5,16 +5,15 @@ body {
   color: #00ffea;
 }
 
-/* Matrix Flicker */
 .terminal-wrapper {
   padding: 30px;
-  max-width: 850px;
-  margin: auto;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
   animation: bgPulse 7s infinite alternate;
-}
-@keyframes bgPulse {
-  0% { box-shadow: inset 0 0 40px #0ff2; }
-  100% { box-shadow: inset 0 0 60px #0ff5; }
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Heading */
@@ -122,5 +121,40 @@ pre::-webkit-scrollbar-thumb {
 }
 
 pre::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}
+/* Main layout */
+.terminal-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;              /* prevents full-page scroll jump */
+}
+
+.terminal-header {
+  flex-shrink: 0;                /* keeps header fixed visually */
+  margin-bottom: 20px;
+}
+
+/* Scrollable content area */
+.challenge-list {
+  overflow-y: auto;
+  padding-right: 12px;           /* avoids scrollbar overlapping content */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Optional neon scrollbar */
+.challenge-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.challenge-list::-webkit-scrollbar-thumb {
+  background: #00eaff;
+  border-radius: 4px;
+}
+
+.challenge-list::-webkit-scrollbar-track {
   background: rgba(255,255,255,0.1);
 }
