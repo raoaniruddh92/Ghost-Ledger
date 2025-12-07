@@ -92,7 +92,7 @@ useEffect(() => {
 
     <div className="terminal-wrapper">
       <h2 className="terminal-header">🧠 GhostLedger — Level 1</h2>
-
+<div className="challenge-list">
       <div className="terminal-card">
         {!isConnected ? (
           <>
@@ -180,6 +180,7 @@ contract GuessTheSecretNumberChallenge {
       )}
       </div>
     </div>
+    </div >
   );
 }
 

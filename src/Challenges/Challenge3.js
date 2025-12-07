@@ -62,6 +62,7 @@ function Challenges2() {
   return (
     <div className="terminal-wrapper">
       <h2 className="terminal-header">GhostLedger — Level 3</h2>
+<div className="challenge-list">
 
       <div className="terminal-card">
         {!wallet ? (
@@ -130,6 +131,7 @@ contract GuessTheNumberChallenge {
           )}
         </div>
       )}
+    </div>
     </div>
   );
 }
