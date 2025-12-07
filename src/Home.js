@@ -17,6 +17,8 @@ function Home() {
         <button className="enter-btn">ENTER CHALLENGES</button>
       </Link>
 
+
+
       <p className="footer-text">Protocol v1.0 — Unauthorized access is forbidden-d3cod3rd3m0n</p>
     </div>
   );
