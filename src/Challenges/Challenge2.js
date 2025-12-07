@@ -61,7 +61,7 @@ function Challenges2() {
 
   return (
     <div className="terminal-wrapper">
-      <h2 className="terminal-header">🧠 Web3 Challenge Console — Level 2</h2>
+      <h2 className="terminal-header">GhostLedger — Level 2</h2>
 
       <div className="terminal-card">
         {!wallet ? (

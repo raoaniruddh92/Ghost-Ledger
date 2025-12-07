@@ -1,11 +1,19 @@
 import { Link } from "react-router-dom";
+import "./cyberpunk-home.css"; // ⬅ new stylesheet
 
 function Home() {
   return (
-    <div>
+    <div className="home-wrapper">
+      <div className="scan-lines"></div>
+
+      <h1 className="title">GhostLedger</h1>
+      <p className="subtitle">Initiate connection to access the smart contract missions...</p>
+
       <Link to="/challenges">
-        <button>Go to Challenges</button>
+        <button className="enter-btn">ENTER CHALLENGES</button>
       </Link>
+
+      <p className="footer-text">Protocol v1.0 — Unauthorized access is forbidden</p>
     </div>
   );
 }

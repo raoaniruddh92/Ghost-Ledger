@@ -28,6 +28,14 @@ function Challenges() {
           ▶ Start Challenge 3
         </Link>
       </div>
+
+      <div className="terminal-card">
+        <h2>Challenge 4</h2>
+        <p>Guess the random number pt-2</p>
+        <Link to="/challenge4" className="cy-button">
+          ▶ Start Challenge 3
+        </Link>
+      </div>
     </div>
   );
 }

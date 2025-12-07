@@ -5,7 +5,7 @@ import { SEPOLIA_CHAIN_ID } from '../config';
 import { onboard } from '../config';
 import './cyberpunk.css';
 
-function Challenges1() {
+function Challenges4() {
   const [wallet, setWallet] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [contractAddress, setContractAddress] = useState(null);
@@ -64,17 +64,28 @@ const connect = async () => {
 
 useEffect(() => {
   const sub = onboard.state.select('wallets').subscribe((wallets) => {
-    setWallet(wallets[0] || null);
+    if (wallets.length > 0) {
+      setWallet(wallets[0]);
+      window.localStorage.setItem('connectedWallets', wallets[0].label);
+    } else {
+      setWallet(null);
+    }
   });
 
-  // 🔥 Auto reconnect previously connected wallet
   const previouslyConnected = window.localStorage.getItem('connectedWallets');
-  if (previouslyConnected) {
-    onboard.connectWallet({ autoSelect: { label: previouslyConnected, disableModals: true } });
-  }
+
+  // 🔥 Delay autoSelect until Onboard has finished restoring state
+  setTimeout(() => {
+    if (previouslyConnected) {
+      onboard.connectWallet({
+        autoSelect: { label: previouslyConnected, disableModals: true },
+      });
+    }
+  }, 300); // <-- important (prevents race condition)
 
   return () => sub.unsubscribe();
 }, []);
+
 
   return (
     <div className="terminal-wrapper">
@@ -101,10 +112,35 @@ useEffect(() => {
       <div className="terminal-card">
         <h3 className="sub-header">⚔ Mission Objective</h3>
         <p>
-          Deploy the challenge smart contract on <span className="neon">Sepolia Network</span>.
+          Putting the answer in the code makes things a little too easy.
+
+This time I’ve only stored the hash of the number. Good luck reversing a cryptographic hash!
         </p>
       </div>
+<div className="terminal-card">
+        <h3>Contract Code</h3> 
+<pre>
+{`
+pragma solidity ^0.8.21;
 
+contract GuessTheSecretNumberChallenge {
+    bytes32 answerHash = 0xdb81b4d58595fbbbb592d3661a34cdca14d7ab379441400cbfa1b78bc447c365;
+    bool completed=false;    
+    function isComplete() public view returns (bool) {
+        return completed;
+    }
+
+    function guess(uint8 n) public payable {
+
+        if (keccak256(n) == answerHash) {
+            completed=true;
+        }
+    }
+}
+`}
+</pre>
+
+    </div>
       <div className="terminal-card">
         <button className="cy-button"
           disabled={!isConnected || isProcessing}
@@ -144,4 +180,4 @@ useEffect(() => {
   );
 }
 
-export default Challenges1;
+export default Challenges4;
