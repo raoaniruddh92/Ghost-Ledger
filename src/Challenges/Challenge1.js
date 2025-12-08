@@ -100,9 +100,18 @@ useEffect(() => {
 
       <div className="terminal-card">
         <h3 className="sub-header">⚔ Mission Objective</h3>
-        <p>
-          Deploy the challenge smart contract on <span className="neon">Sepolia Network</span>.
-        </p>
+              <p>
+      To complete this challenge, you need to:
+      <ol>
+      <li>Install MetaMask.</li>
+      <li>Switch to the Sepolia test network.</li>
+      <li>Get some Sepolia ETH.</li>
+      </ol>
+      Click the “Buy” / “Get ETH” button in MetaMask, or visit a Sepolia faucet to receive free test ETH.
+      After you’ve done that, press the red button on the left to deploy the challenge contract.
+      You don’t need to interact with the contract once it’s deployed.
+      Just click the “Check Solution” button to verify that the deployment was successful.        
+      </p>
       </div>
 
       <div className="terminal-card">
