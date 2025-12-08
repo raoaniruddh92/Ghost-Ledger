@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { deploy_contract } from './Challenge1helpers/deploy';
-import { interact } from './Challenge1helpers/interact';
+import { deploy_contract } from './Challenge6helpers/deploy';
+import { interact } from './Challenge6helpers/interact';
 import { SEPOLIA_CHAIN_ID } from '../config';
 import { onboard } from '../config';
 import './cyberpunk.css';
 
-function Challenges1() {
+function Challenges6() {
   const [wallet, setWallet] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [contractAddress, setContractAddress] = useState(null);
@@ -64,22 +64,35 @@ const connect = async () => {
 
 useEffect(() => {
   const sub = onboard.state.select('wallets').subscribe((wallets) => {
-    setWallet(wallets[0] || null);
+    if (wallets.length > 0) {
+      setWallet(wallets[0]);
+      window.localStorage.setItem('connectedWallets', wallets[0].label);
+    } else {
+      setWallet(null);
+    }
   });
 
-  // 🔥 Auto reconnect previously connected wallet
   const previouslyConnected = window.localStorage.getItem('connectedWallets');
-  if (previouslyConnected) {
-    onboard.connectWallet({ autoSelect: { label: previouslyConnected, disableModals: true } });
-  }
+
+  // 🔥 Delay autoSelect until Onboard has finished restoring state
+  setTimeout(() => {
+    if (previouslyConnected) {
+      onboard.connectWallet({
+        autoSelect: { label: previouslyConnected, disableModals: true },
+      });
+    }
+  }, 300); // <-- important (prevents race condition)
 
   return () => sub.unsubscribe();
 }, []);
 
-  return (
-    <div className="terminal-wrapper">
-      <h2 className="terminal-header">🧠 GhostLedger — Level 1</h2>
 
+  return (
+      <div className="terminal-scroll">
+
+    <div className="terminal-wrapper">
+      <h2 className="terminal-header">🧠 GhostLedger — Level 6</h2>
+<div className="challenge-list">
       <div className="terminal-card">
         {!isConnected ? (
           <>
@@ -100,20 +113,48 @@ useEffect(() => {
 
       <div className="terminal-card">
         <h3 className="sub-header">⚔ Mission Objective</h3>
-              <p>
-      To complete this challenge, you need to:
-      <ol>
-      <li>Install MetaMask.</li>
-      <li>Switch to the Sepolia test network.</li>
-      <li>Get some Sepolia ETH.</li>
-      </ol>
-      Click the “Buy” / “Get ETH” button in MetaMask, or visit a Sepolia faucet to receive free test ETH.
-      After you’ve done that, press the deploy button on the page end to deploy the challenge contract.
-      You don’t need to interact with the contract once it’s deployed.
-      Just click the “Check Solution” button to verify that the deployment was successful.        
-      </p>
-      </div>
+        <p>
+            This time, you have to lock in your guess before the random number is generated. To give you a sporting chance, there are only ten possible answers.
 
+            Note that it is indeed possible to solve this challenge without losing any ether.
+        </p>
+      </div>
+<div className="terminal-card">
+        <h3>Contract Code</h3> 
+<pre>
+{`
+pragma solidity ^0.8.21;
+
+contract PredictTheFutureChallenge {
+    address guesser;
+    uint8 guess;
+    uint256 settlementBlockNumber;
+    bool iscomplete;
+
+    function isComplete() public view returns (bool) {
+        return iscomplete;
+    }
+
+    function lockInGuess(uint8 n) public payable {
+        guesser = msg.sender;
+        guess = n;
+        settlementBlockNumber = block.number + 1;
+    }
+
+    function settle() public {
+        require(msg.sender == guesser);
+        require(block.number > settlementBlockNumber);
+
+        uint8 answer = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp)))) % 10;
+        if (answer==guess){
+            iscomplete=true;
+        }
+    }
+}
+`}
+</pre>
+
+    </div>
       <div className="terminal-card">
         <button className="cy-button"
           disabled={!isConnected || isProcessing}
@@ -149,8 +190,10 @@ useEffect(() => {
           )}
         </div>
       )}
+      </div>
     </div>
+    </div >
   );
 }
 
-export default Challenges1;
+export default Challenges6;

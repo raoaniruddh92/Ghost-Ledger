@@ -5,6 +5,10 @@ import Challenges1 from "./Challenges/Challenge1.js";
 import Challenges2 from "./Challenges/Challenge2.js";
 import Challenges3 from "./Challenges/Challenge3.js";
 import Challenges4 from "./Challenges/Challenge4.js";
+import Challenges5 from "./Challenges/Challenge5.js";
+import Challenges6 from "./Challenges/Challenge6.js";
+import Challenges7 from "./Challenges/Challenge7.js";
+
 import "./App.css";
 
 function App() {
@@ -18,6 +22,9 @@ function App() {
           <Route path="/challenge2" element={<Challenges2 />} />
           <Route path="/challenge3" element={<Challenges3 />} />
           <Route path="/challenge4" element={<Challenges4 />} />
+          <Route path="/challenge5" element={<Challenges5 />} />
+          <Route path="/challenge6" element={<Challenges6 />} />
+          <Route path="/challenge7" element={<Challenges7 />} />
 
         </Routes>
       </div>

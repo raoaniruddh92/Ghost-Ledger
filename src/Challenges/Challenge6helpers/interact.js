@@ -1,4 +1,4 @@
-import { Challenges3abi as abi, Challenges3bytecode as bytecode } from "../abi";
+import { Challenges6abi as abi, Challenges6bytecode as bytecode } from "../abi";
 import { BrowserProvider } from "ethers";
 const { ethers } = require("ethers");
 
