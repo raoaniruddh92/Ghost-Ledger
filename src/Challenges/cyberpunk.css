@@ -165,3 +165,40 @@ pre::-webkit-scrollbar-track {
 .challenge-list::-webkit-scrollbar-track {
   background: rgba(255,255,255,0.1);
 }
+
+.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.cyber-loader {
+  width: 90px;
+  height: 90px;
+  border: 4px solid #00ffd0;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite, glow 1s alternate infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 8px #00ffd0; }
+  100% { box-shadow: 0 0 20px #00ffd0; }
+}
+
+.glitch {
+  animation: glitch 1s infinite;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 2px 0 #ff00f7, -2px 0 #00fff2; }
+  50% { text-shadow: -2px 0 #ff00f7, 2px 0 #00fff2; }
+  100% { text-shadow: 2px 0 #ff00f7, -2px 0 #00fff2; }
+}
