@@ -12,11 +12,8 @@ export async function deploy_contract() {
 
     const factory = new ContractFactory(abi, bytecode, signer);
     console.log("Attempting to deploy contract...");
-
-    const contract = await factory.deploy(
-        signer.address,                      // constructor parameter _player
-        { value: parseEther("0.001") }           // required msg.value
-    );
+    try{
+    const contract = await factory.deploy({ value: parseEther("0.001") });
 
     console.log("Deployment transaction sent. Waiting for confirmation...");
     await contract.waitForDeployment();
@@ -27,4 +24,8 @@ export async function deploy_contract() {
 
     localStorage.setItem("current_challenge", address);
     return address;
+    }
+    catch(err){
+        console.log(err);
+    }
 }

@@ -11,6 +11,7 @@ export async function  interact(address){
     const signer = await provider.getSigner();  
     const contract = new ethers.Contract(address, abi, signer);    
     const result = await contract.isComplete();
+    if (result==true){
         return true;
     }else{
         return false;
