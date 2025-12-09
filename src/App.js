@@ -10,7 +10,7 @@ import Challenges6 from "./Challenges/Challenge6.js";
 import Challenges7 from "./Challenges/Challenge7.js";
 import Challenges8 from "./Challenges/Challenge8.js";
 import Challenges9 from "./Challenges/Challenge9.js";
-
+import Challenges10 from "./Challenges/Challenge10.js";
 import "./App.css";
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
           <Route path="/challenge7" element={<Challenges7 />} />
           <Route path="/challenge8" element={<Challenges8 />} />
           <Route path="/challenge9" element={<Challenges9 />} />
+          <Route path="/challenge10" element={<Challenges10 />} />
         </Routes>
       </div>
     </Router>

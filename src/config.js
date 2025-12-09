@@ -1,7 +1,7 @@
 import Onboard from '@web3-onboard/core';
 import metamaskSDK from '@web3-onboard/metamask';
 
-export const INFURA_ID = 'e58130da3dee4d6c9f1ab1df59cbe8aa';
+export const INFURA_ID = 'd3/ad/add/res/s';
 export const SEPOLIA_CHAIN_ID = 11155111;
 
 export const chains = [

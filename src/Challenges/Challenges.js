@@ -22,36 +22,43 @@ function Challenges() {
             ▶ Start Challenge 2
           </Link>
         </div>
-        <br></br>
-        <h2>Lotteries</h2>
         <div className="terminal-card">
           <h3>Challenge 3</h3>
-          <p>Guess the random number</p>
-          <Link to="/challenge3" className="cy-button">
+          <p>Send some ether</p>
+          <Link to="/challenge10" className="cy-button">
             ▶ Start Challenge 3
           </Link>
         </div>
-
+        <br></br>
+        <h2>Lotteries</h2>
         <div className="terminal-card">
           <h3>Challenge 4</h3>
-          <p>Guess the random number pt-2</p>
-          <Link to="/challenge4" className="cy-button">
+          <p>Guess the random number</p>
+          <Link to="/challenge3" className="cy-button">
             ▶ Start Challenge 4
           </Link>
         </div>
 
         <div className="terminal-card">
           <h3>Challenge 5</h3>
-          <p>Guess the new number</p>
-          <Link to="/challenge5" className="cy-button">
+          <p>Guess the random number pt-2</p>
+          <Link to="/challenge4" className="cy-button">
             ▶ Start Challenge 5
           </Link>
         </div>
+
         <div className="terminal-card">
           <h3>Challenge 6</h3>
+          <p>Guess the new number</p>
+          <Link to="/challenge5" className="cy-button">
+            ▶ Start Challenge 6
+          </Link>
+        </div>
+        <div className="terminal-card">
+          <h3>Challenge 7</h3>
           <p>Predict the future</p>
           <Link to="/challenge6" className="cy-button">
-            ▶ Start Challenge 6
+            ▶ Start Challenge 7
           </Link>
         </div>
         
@@ -59,27 +66,27 @@ function Challenges() {
         <h2>Math</h2>
 
         <div className="terminal-card">
-          <h3>Challenge 7</h3>
+          <h3>Challenge 8</h3>
           <p>Token Bank</p>
           <Link to="/challenge7" className="cy-button">
-            ▶ Start Challenge 7
-          </Link>
-        </div>
-
-         <div className="terminal-card">
-          <h3>Challenge 8</h3>
-          <p>Token Whale</p>
-          <Link to="/challenge8" className="cy-button">
             ▶ Start Challenge 8
           </Link>
         </div>
 
-
          <div className="terminal-card">
           <h3>Challenge 9</h3>
+          <p>Token Whale</p>
+          <Link to="/challenge8" className="cy-button">
+            ▶ Start Challenge 9
+          </Link>
+        </div>
+
+
+         <div className="terminal-card">
+          <h3>Challenge 10</h3>
           <p>Retirement fund</p>
           <Link to="/challenge9" className="cy-button">
-            ▶ Start Challenge 9
+            ▶ Start Challenge 10
           </Link>
         </div>
       </div>
