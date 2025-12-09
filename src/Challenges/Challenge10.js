@@ -11,7 +11,7 @@ function Challenges10() {
   const [contractAddress, setContractAddress] = useState(null);
   const [solutionStatus, setSolutionStatus] = useState(null);
   const [deployNotification, setDeployNotification] = useState(null);
-  const [loading, setLoading] = useState(true); // ⏳ new
+  const [loading, setLoading] = useState(true); 
 
   const isConnected =
     wallet && wallet.accounts && wallet.accounts.length > 0;
@@ -106,7 +106,7 @@ function Challenges10() {
   return (
     <div className="terminal-scroll">
       <div className="terminal-wrapper">
-        <h2 className="terminal-header">🧠 GhostLedger — Level 9</h2>
+        <h2 className="terminal-header">🧠 GhostLedger — Level 3</h2>
         <div className="challenge-list">
           <div className="terminal-card">
             {!isConnected ? (

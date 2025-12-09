@@ -12,11 +12,13 @@ import Challenges8 from "./Challenges/Challenge8.js";
 import Challenges9 from "./Challenges/Challenge9.js";
 import Challenges10 from "./Challenges/Challenge10.js";
 import "./App.css";
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
-    <Router>
       <div className="App">
+            <Router>
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/challenges" element={<Challenges />} />
@@ -31,8 +33,11 @@ function App() {
           <Route path="/challenge9" element={<Challenges9 />} />
           <Route path="/challenge10" element={<Challenges10 />} />
         </Routes>
-      </div>
     </Router>
+      <Analytics/>
+
+      </div>
+    
   );
 }
 

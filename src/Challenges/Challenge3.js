@@ -100,7 +100,7 @@ function Challenges3() {
 
   return (
     <div className="terminal-wrapper">
-      <h2 className="terminal-header">GhostLedger — Level 3</h2>
+      <h2 className="terminal-header">GhostLedger — Level 4</h2>
 <div className="challenge-list">
 
       <div className="terminal-card">
