@@ -11,19 +11,21 @@ function Challenges1() {
   const [contractAddress, setContractAddress] = useState(null);
   const [solutionStatus, setSolutionStatus] = useState(null);
   const [deployNotification, setDeployNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // ⏳ new
 
   const isConnected =
     wallet && wallet.accounts && wallet.accounts.length > 0;
 
-const connect = async () => {
-  const wallets = await onboard.connectWallet();
-  if (wallets[0]) {
-    setWallet(wallets[0]);
-    window.localStorage.setItem('connectedWallets', wallets[0].label); // <—
-    const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
-    await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
-  }
-};
+  const connect = async () => {
+    if (loading) return;
+    const wallets = await onboard.connectWallet();
+    if (wallets[0]) {
+      setWallet(wallets[0]);
+      window.localStorage.setItem('connectedWallets', wallets[0].label);
+      const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
+      await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
+    }
+  };
 
   const disconnect = async () => {
     if (!wallet) return;
@@ -62,45 +64,71 @@ const connect = async () => {
     }
   };
 
-useEffect(() => {
-  const sub = onboard.state.select('wallets').subscribe((wallets) => {
-    setWallet(wallets[0] || null);
-  });
+  useEffect(() => {
+    // 🔥 Boot delay so Onboard loads properly
+    const bootTimer = setTimeout(() => setLoading(false), 1000);
 
-  // 🔥 Auto reconnect previously connected wallet
-  const previouslyConnected = window.localStorage.getItem('connectedWallets');
-  if (previouslyConnected) {
-    onboard.connectWallet({ autoSelect: { label: previouslyConnected, disableModals: true } });
+    const sub = onboard.state.select('wallets').subscribe((wallets) => {
+      if (wallets.length > 0) {
+        setWallet(wallets[0]);
+        window.localStorage.setItem('connectedWallets', wallets[0].label);
+      } else {
+        setWallet(null);
+      }
+    });
+
+    const previouslyConnected = window.localStorage.getItem('connectedWallets');
+
+    setTimeout(() => {
+      if (previouslyConnected) {
+        onboard.connectWallet({
+          autoSelect: { label: previouslyConnected, disableModals: true },
+        });
+      }
+    }, 300);
+
+    return () => {
+      sub.unsubscribe();
+      clearTimeout(bootTimer);
+    };
+  }, []);
+
+  // 🚀 Loading splash (cyberpunk spinner)
+  if (loading) {
+    return (
+      <div className="terminal-wrapper center-screen">
+        <div className="cyber-loader"></div>
+        <h2 className="terminal-header glitch">Initializing Wallet Interface...</h2>
+      </div>
+    );
   }
 
-  return () => sub.unsubscribe();
-}, []);
-
   return (
-    <div className="terminal-wrapper">
-      <h2 className="terminal-header">🧠 GhostLedger — Level 1</h2>
+    <div className="terminal-scroll">
+      <div className="terminal-wrapper">
+        <h2 className="terminal-header">🧠 GhostLedger — Level 1</h2>
+        <div className="challenge-list">
+          <div className="terminal-card">
+            {!isConnected ? (
+              <>
+                <p className="terminal-text">🔻 STATUS: Wallet not connected.</p>
+                <button className="cy-button" onClick={connect}>CONNECT WALLET</button>
+              </>
+            ) : (
+              <>
+                <p className="terminal-text">
+                  🟢 Connected → {wallet.accounts[0].address}
+                </p>
+                <button className="cy-button small" onClick={disconnect}>
+                  ❌ DISCONNECT
+                </button>
+              </>
+            )}
+          </div>
 
-      <div className="terminal-card">
-        {!isConnected ? (
-          <>
-            <p className="terminal-text">🔻 STATUS: Wallet not connected.</p>
-            <button className="cy-button" onClick={connect}>CONNECT WALLET</button>
-          </>
-        ) : (
-          <>
-            <p className="terminal-text">
-              🟢 Connected → {wallet.accounts[0].address}
-            </p>
-            <button className="cy-button small" onClick={disconnect}>
-              ❌ DISCONNECT
-            </button>
-          </>
-        )}
-      </div>
-
-      <div className="terminal-card">
-        <h3 className="sub-header">⚔ Mission Objective</h3>
-              <p>
+          <div className="terminal-card">
+            <h3 className="sub-header">⚔ Mission Objective</h3>
+<p>
       To complete this challenge, you need to:
       <ol>
       <li>Install MetaMask.</li>
@@ -112,44 +140,44 @@ useEffect(() => {
       You don’t need to interact with the contract once it’s deployed.
       Just click the “Check Solution” button to verify that the deployment was successful.        
       </p>
-      </div>
+          </div>
+            <button
+              className="cy-button"
+              disabled={!isConnected || isProcessing}
+              onClick={handleDeploy}
+            >
+              {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
+            </button>
 
-      <div className="terminal-card">
-        <button className="cy-button"
-          disabled={!isConnected || isProcessing}
-          onClick={handleDeploy}
-        >
-          {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
-        </button>
+            {deployNotification && (
+              <pre className={`console-box ${deployNotification.type}`}>
+                {deployNotification.message}
+              </pre>
+            )}
+          </div>
 
-        {deployNotification && (
-          <pre className={`console-box ${deployNotification.type}`}>
-            {deployNotification.message}
-          </pre>
-        )}
-      </div>
+          {contractAddress && (
+            <div className="terminal-card">
+              <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
 
-      {contractAddress && (
-        <div className="terminal-card">
-          <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
+              <button
+                className="cy-button small"
+                disabled={isProcessing}
+                onClick={handleCheckSolution}
+              >
+                {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
+              </button>
 
-          <button
-            className="cy-button small"
-            disabled={isProcessing}
-            onClick={handleCheckSolution}
-          >
-            {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
-          </button>
-
-          {solutionStatus === "success" && (
-            <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
-          )}
-          {solutionStatus === "error" && (
-            <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              {solutionStatus === "success" && (
+                <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
+              )}
+              {solutionStatus === "error" && (
+                <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              )}
+            </div>
           )}
         </div>
-      )}
-    </div>
+      </div>
   );
 }
 

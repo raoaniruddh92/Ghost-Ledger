@@ -11,19 +11,21 @@ function Challenges4() {
   const [contractAddress, setContractAddress] = useState(null);
   const [solutionStatus, setSolutionStatus] = useState(null);
   const [deployNotification, setDeployNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // ⏳ new
 
   const isConnected =
     wallet && wallet.accounts && wallet.accounts.length > 0;
 
-const connect = async () => {
-  const wallets = await onboard.connectWallet();
-  if (wallets[0]) {
-    setWallet(wallets[0]);
-    window.localStorage.setItem('connectedWallets', wallets[0].label); // <—
-    const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
-    await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
-  }
-};
+  const connect = async () => {
+    if (loading) return;
+    const wallets = await onboard.connectWallet();
+    if (wallets[0]) {
+      setWallet(wallets[0]);
+      window.localStorage.setItem('connectedWallets', wallets[0].label);
+      const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
+      await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
+    }
+  };
 
   const disconnect = async () => {
     if (!wallet) return;
@@ -62,33 +64,47 @@ const connect = async () => {
     }
   };
 
-useEffect(() => {
-  const sub = onboard.state.select('wallets').subscribe((wallets) => {
-    if (wallets.length > 0) {
-      setWallet(wallets[0]);
-      window.localStorage.setItem('connectedWallets', wallets[0].label);
-    } else {
-      setWallet(null);
-    }
-  });
+  useEffect(() => {
+    // 🔥 Boot delay so Onboard loads properly
+    const bootTimer = setTimeout(() => setLoading(false), 1000);
 
-  const previouslyConnected = window.localStorage.getItem('connectedWallets');
+    const sub = onboard.state.select('wallets').subscribe((wallets) => {
+      if (wallets.length > 0) {
+        setWallet(wallets[0]);
+        window.localStorage.setItem('connectedWallets', wallets[0].label);
+      } else {
+        setWallet(null);
+      }
+    });
 
-  // 🔥 Delay autoSelect until Onboard has finished restoring state
-  setTimeout(() => {
-    if (previouslyConnected) {
-      onboard.connectWallet({
-        autoSelect: { label: previouslyConnected, disableModals: true },
-      });
-    }
-  }, 300); // <-- important (prevents race condition)
+    const previouslyConnected = window.localStorage.getItem('connectedWallets');
 
-  return () => sub.unsubscribe();
-}, []);
+    setTimeout(() => {
+      if (previouslyConnected) {
+        onboard.connectWallet({
+          autoSelect: { label: previouslyConnected, disableModals: true },
+        });
+      }
+    }, 300);
 
+    return () => {
+      sub.unsubscribe();
+      clearTimeout(bootTimer);
+    };
+  }, []);
+
+  // 🚀 Loading splash (cyberpunk spinner)
+  if (loading) {
+    return (
+      <div className="terminal-wrapper center-screen">
+        <div className="cyber-loader"></div>
+        <h2 className="terminal-header glitch">Initializing Wallet Interface...</h2>
+      </div>
+    );
+  }
 
   return (
-      <div className="terminal-scroll">
+<div className="terminal-scroll">
 
     <div className="terminal-wrapper">
       <h2 className="terminal-header">🧠 GhostLedger — Level 4</h2>
@@ -143,44 +159,46 @@ contract GuessTheSecretNumberChallenge {
 </pre>
 
     </div>
-      <div className="terminal-card">
-        <button className="cy-button"
-          disabled={!isConnected || isProcessing}
-          onClick={handleDeploy}
-        >
-          {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
-        </button>
 
-        {deployNotification && (
-          <pre className={`console-box ${deployNotification.type}`}>
-            {deployNotification.message}
-          </pre>
-        )}
-      </div>
+          <div className="terminal-card">
+            <button
+              className="cy-button"
+              disabled={!isConnected || isProcessing}
+              onClick={handleDeploy}
+            >
+              {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
+            </button>
 
-      {contractAddress && (
-        <div className="terminal-card">
-          <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
+            {deployNotification && (
+              <pre className={`console-box ${deployNotification.type}`}>
+                {deployNotification.message}
+              </pre>
+            )}
+          </div>
 
-          <button
-            className="cy-button small"
-            disabled={isProcessing}
-            onClick={handleCheckSolution}
-          >
-            {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
-          </button>
+          {contractAddress && (
+            <div className="terminal-card">
+              <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
 
-          {solutionStatus === "success" && (
-            <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
-          )}
-          {solutionStatus === "error" && (
-            <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              <button
+                className="cy-button small"
+                disabled={isProcessing}
+                onClick={handleCheckSolution}
+              >
+                {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
+              </button>
+
+              {solutionStatus === "success" && (
+                <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
+              )}
+              {solutionStatus === "error" && (
+                <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              )}
+            </div>
           )}
         </div>
-      )}
       </div>
     </div>
-    </div >
   );
 }
 

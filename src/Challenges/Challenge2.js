@@ -3,7 +3,7 @@ import { deploy_contract } from './Challenge2helpers/deploy';
 import { interact } from './Challenge2helpers/interact';
 import { SEPOLIA_CHAIN_ID } from '../config';
 import { onboard } from '../config';
-import './cyberpunk.css'; // ⬅ new stylesheet
+import './cyberpunk.css';
 
 function Challenges2() {
   const [wallet, setWallet] = useState(null);
@@ -11,16 +11,27 @@ function Challenges2() {
   const [contractAddress, setContractAddress] = useState(null);
   const [solutionStatus, setSolutionStatus] = useState(null);
   const [deployNotification, setDeployNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // ⏳ new
 
-const connect = async () => {
-  const wallets = await onboard.connectWallet();
-  if (wallets[0]) {
-    setWallet(wallets[0]);
-    window.localStorage.setItem('connectedWallets', wallets[0].label); // <—
-    const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
-    await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
-  }
-};
+  const isConnected =
+    wallet && wallet.accounts && wallet.accounts.length > 0;
+
+  const connect = async () => {
+    if (loading) return;
+    const wallets = await onboard.connectWallet();
+    if (wallets[0]) {
+      setWallet(wallets[0]);
+      window.localStorage.setItem('connectedWallets', wallets[0].label);
+      const SEPOLIA_CHAIN_ID_HEX = `0x${SEPOLIA_CHAIN_ID.toString(16)}`;
+      await onboard.setChain({ chainId: SEPOLIA_CHAIN_ID_HEX });
+    }
+  };
+
+  const disconnect = async () => {
+    if (!wallet) return;
+    await onboard.disconnectWallet({ label: wallet.label });
+    setWallet(null);
+  };
 
   const handleDeploy = async () => {
     setIsProcessing(true);
@@ -31,7 +42,7 @@ const connect = async () => {
       const address = await deploy_contract();
       setContractAddress(address);
       setDeployNotification({ message: `⚡ Deployment Success → ${address}`, type: 'success' });
-    } catch (err) {
+    } catch {
       setDeployNotification({ message: '❌ Deployment Failed', type: 'error' });
     } finally {
       setIsProcessing(false);
@@ -53,38 +64,69 @@ const connect = async () => {
     }
   };
 
-useEffect(() => {
-  const sub = onboard.state.select('wallets').subscribe((wallets) => {
-    setWallet(wallets[0] || null);
-  });
+  useEffect(() => {
+    // 🔥 Boot delay so Onboard loads properly
+    const bootTimer = setTimeout(() => setLoading(false), 1000);
 
-  // 🔥 Auto reconnect previously connected wallet
-  const previouslyConnected = window.localStorage.getItem('connectedWallets');
-  if (previouslyConnected) {
-    onboard.connectWallet({ autoSelect: { label: previouslyConnected, disableModals: true } });
+    const sub = onboard.state.select('wallets').subscribe((wallets) => {
+      if (wallets.length > 0) {
+        setWallet(wallets[0]);
+        window.localStorage.setItem('connectedWallets', wallets[0].label);
+      } else {
+        setWallet(null);
+      }
+    });
+
+    const previouslyConnected = window.localStorage.getItem('connectedWallets');
+
+    setTimeout(() => {
+      if (previouslyConnected) {
+        onboard.connectWallet({
+          autoSelect: { label: previouslyConnected, disableModals: true },
+        });
+      }
+    }, 300);
+
+    return () => {
+      sub.unsubscribe();
+      clearTimeout(bootTimer);
+    };
+  }, []);
+
+  // 🚀 Loading splash (cyberpunk spinner)
+  if (loading) {
+    return (
+      <div className="terminal-wrapper center-screen">
+        <div className="cyber-loader"></div>
+        <h2 className="terminal-header glitch">Initializing Wallet Interface...</h2>
+      </div>
+    );
   }
 
-  return () => sub.unsubscribe();
-}, []);
-
   return (
-    <div className="terminal-wrapper">
-      <h2 className="terminal-header">GhostLedger — Level 2</h2>
+    <div className="terminal-scroll">
+      <div className="terminal-wrapper">
+        <h2 className="terminal-header">🧠 GhostLedger — Level 2</h2>
+        <div className="challenge-list">
+          <div className="terminal-card">
+            {!isConnected ? (
+              <>
+                <p className="terminal-text">🔻 STATUS: Wallet not connected.</p>
+                <button className="cy-button" onClick={connect}>CONNECT WALLET</button>
+              </>
+            ) : (
+              <>
+                <p className="terminal-text">
+                  🟢 Connected → {wallet.accounts[0].address}
+                </p>
+                <button className="cy-button small" onClick={disconnect}>
+                  ❌ DISCONNECT
+                </button>
+              </>
+            )}
+          </div>
 
-      <div className="terminal-card">
-        {!wallet ? (
-          <>
-            <p className="terminal-text">🔻 STATUS: Wallet not connected.</p>
-            <button className="cy-button" onClick={connect}>CONNECT WALLET</button>
-          </>
-        ) : (
-          <p className="terminal-text">
-            🟢 Connected → {wallet.accounts[0].address}
-          </p>
-        )}
-      </div>
-
-      <div className="terminal-card">
+               <div className="terminal-card">
         <h3 className="sub-header">⚔ Mission Objective</h3>
         <p>Deploy the challenge smart contract on <span className="neon">Sepolia Network and call the function </span>.</p>
       </div>
@@ -103,34 +145,45 @@ contract CallMeChallenge {
 </pre>
 
     </div>
-      <div className="terminal-card">
-        <button className="cy-button" disabled={!wallet || isProcessing} onClick={handleDeploy}>
-          {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
-        </button>
 
-        {deployNotification && (
-          <pre className={`console-box ${deployNotification.type}`}>
-            {deployNotification.message}
-          </pre>
-        )}
-      </div>
+          <div className="terminal-card">
+            <button
+              className="cy-button"
+              disabled={!isConnected || isProcessing}
+              onClick={handleDeploy}
+            >
+              {isProcessing ? "PROCESSING..." : "🚀 DEPLOY CONTRACT"}
+            </button>
 
-      {contractAddress && (
-        <div className="terminal-card">
-          <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
+            {deployNotification && (
+              <pre className={`console-box ${deployNotification.type}`}>
+                {deployNotification.message}
+              </pre>
+            )}
+          </div>
 
-          <button className="cy-button small" disabled={isProcessing} onClick={handleCheckSolution}>
-            {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
-          </button>
+          {contractAddress && (
+            <div className="terminal-card">
+              <p>📌 Contract Address: <span className="neon">{contractAddress}</span></p>
 
-          {solutionStatus === "success" && (
-            <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
-          )}
-          {solutionStatus === "error" && (
-            <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              <button
+                className="cy-button small"
+                disabled={isProcessing}
+                onClick={handleCheckSolution}
+              >
+                {isProcessing ? "SCANNING..." : "🔍 VERIFY CHALLENGE"}
+              </button>
+
+              {solutionStatus === "success" && (
+                <div className="success-scan">🎉 CHALLENGE COMPLETED — ACCESS GRANTED</div>
+              )}
+              {solutionStatus === "error" && (
+                <div className="error-scan">⚠ VERIFICATION FAILED — ACCESS DENIED</div>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

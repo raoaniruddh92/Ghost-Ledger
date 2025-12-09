@@ -11,7 +11,7 @@ function Home() {
 
 
       <p className="subtitle">Some problems could not be ported because they rely on vulnerabilities that only existed in older versions of Solidity. Some liberty has been taken where the syntax and other compiler features are no longer compatible. </p>
-      <p className="subtitle" >This project is fully open source so feel free to contribute</p>
+      <p className="subtitle" >This project is fully open source so feel free to contribute,for anything else please email raoaniruddh92@gmail.com</p>
 
       <Link to="/challenges">
         <button className="enter-btn">ENTER CHALLENGES</button>
