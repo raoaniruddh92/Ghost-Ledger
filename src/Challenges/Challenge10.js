@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { deploy_contract } from './Challenge9helpers/deploy';
-import { interact } from './Challenge9helpers/interact';
+import { deploy_contract } from './Challenge10helpers/deploy';
+import { interact } from './Challenge10helpers/interact';
 import { SEPOLIA_CHAIN_ID } from '../config';
 import { onboard } from '../config';
 import './cyberpunk.css';
