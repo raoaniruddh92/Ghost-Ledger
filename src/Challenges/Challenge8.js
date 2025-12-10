@@ -27,12 +27,6 @@ function Challenges8() {
     }
   };
 
-  const disconnect = async () => {
-    if (!wallet) return;
-    await onboard.disconnectWallet({ label: wallet.label });
-    setWallet(null);
-  };
-
   const handleDeploy = async () => {
     setIsProcessing(true);
     setDeployNotification({ message: '💾 Compiling + Deploying contract...', type: 'pending' });

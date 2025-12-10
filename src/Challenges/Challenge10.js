@@ -27,11 +27,7 @@ function Challenges10() {
     }
   };
 
-  const disconnect = async () => {
-    if (!wallet) return;
-    await onboard.disconnectWallet({ label: wallet.label });
-    setWallet(null);
-  };
+
 
   const handleDeploy = async () => {
     setIsProcessing(true);
