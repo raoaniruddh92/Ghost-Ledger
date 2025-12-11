@@ -89,6 +89,14 @@ function Challenges() {
             ▶ Start Challenge 10
           </Link>
         </div>
+
+                 <div className="terminal-card">
+          <h3>Challenge 10</h3>
+          <p>Retirement fund</p>
+          <Link to="/challenge10" className="cy-button">
+            ▶ Start Challenge 11
+          </Link>
+        </div>
       </div>
     </div>
   );
